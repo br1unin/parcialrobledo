@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__plugin_engram_engram__mem_context",
+      "Bash(openspec list *)",
+      "Bash(openspec new *)",
+      "Bash(openspec status *)",
+      "Bash(openspec instructions *)",
+      "mcp__plugin_engram_engram__mem_save",
+      "Bash(xargs grep *)"
+    ]
+  }
+}
