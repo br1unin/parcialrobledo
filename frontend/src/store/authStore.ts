@@ -11,6 +11,7 @@ type AuthState = {
   login: (accessToken: string, refreshToken: string, user: UserResponse) => void;
   logout: () => void;
   updateTokens: (accessToken: string, refreshToken: string) => void;
+  updateUser: (user: UserResponse) => void;
   hasRole: (role: string) => boolean;
 };
 
@@ -26,6 +27,7 @@ export const useAuthStore = create<AuthState>()(
       logout: () => set({ accessToken: null, refreshToken: null, user: null, isAuthenticated: false }),
       updateTokens: (accessToken, refreshToken) =>
         set({ accessToken, refreshToken, isAuthenticated: true }),
+      updateUser: (user) => set({ user }),
       hasRole: (role) => get().user?.roles.includes(role) ?? false,
     }),
     {

@@ -3,6 +3,9 @@ export type UserResponse = {
   email: string;
   nombre: string;
   apellido: string;
+  telefono: string | null;
+  is_active: boolean;
+  created_at: string;
   roles: string[];
 };
 

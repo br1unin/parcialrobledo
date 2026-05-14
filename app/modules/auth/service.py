@@ -33,6 +33,9 @@ async def _issue_tokens(uow: UnitOfWork, user: Usuario) -> TokenResponse:
             email=user.email,
             nombre=user.nombre,
             apellido=user.apellido,
+            telefono=user.telefono,
+            is_active=user.is_active,
+            created_at=user.created_at,
             roles=roles,
         ),
     )
@@ -51,9 +54,11 @@ async def register(uow: UnitOfWork, data: RegisterRequest) -> TokenResponse:
 
 
 async def login(uow: UnitOfWork, data: LoginRequest) -> TokenResponse:
+    # get_by_email already filters deleted_at IS NULL; a deleted user returns None
     user = await uow.usuarios.get_by_email(data.email)
 
     if user is None or not user.is_active:
+        # Also covers the case where deleted_at is set (get_by_email returns None)
         await verify_password(data.password, _DUMMY_HASH)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Credenciales inválidas")
 

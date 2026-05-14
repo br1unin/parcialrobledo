@@ -74,6 +74,8 @@ async def get_current_user(
     user = await repo.get_by_id(uuid.UUID(user_id))
     if user is None or not user.is_active:
         raise credentials_exception
+    if user.deleted_at is not None:
+        raise credentials_exception
 
     return CurrentUser(
         id=user.id,

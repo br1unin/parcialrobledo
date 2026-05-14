@@ -14,6 +14,7 @@ import { MisPedidosPage } from '@/pages/MisPedidosPage';
 import { PaymentPage } from '@/pages/PaymentPage';
 import { PedidoDetailPage } from '@/pages/PedidoDetailPage';
 import { ProductosAdminPage } from '@/pages/ProductosAdminPage';
+import { ProfilePage } from '@/pages/ProfilePage';
 import { RegisterPage } from '@/pages/RegisterPage';
 import { PrivateRoute } from '@/shared/ui/PrivateRoute';
 import { useAuthStore } from '@/store/authStore';
@@ -66,6 +67,12 @@ function HomePage() {
             className="px-4 py-2 bg-orange-100 hover:bg-orange-200 rounded-lg text-sm font-medium text-orange-700 transition-colors"
           >
             Mis Pedidos
+          </Link>
+          <Link
+            to="/perfil"
+            className="px-4 py-2 bg-orange-100 hover:bg-orange-200 rounded-lg text-sm font-medium text-orange-700 transition-colors"
+          >
+            Mi Perfil
           </Link>
           <CartIcon />
           {(user?.roles.includes('ADMIN') || user?.roles.includes('STOCK')) && (
@@ -181,6 +188,14 @@ export function Router() {
           element={
             <PrivateRoute>
               <PedidoDetailPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <PrivateRoute>
+              <ProfilePage />
             </PrivateRoute>
           }
         />
