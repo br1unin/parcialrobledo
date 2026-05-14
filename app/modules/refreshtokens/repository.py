@@ -12,6 +12,25 @@ class RefreshTokenRepository(BaseRepository[RefreshToken]):
     def __init__(self, session):
         super().__init__(session, RefreshToken)
 
+    async def list_active_for_user(self, usuario_id: uuid.UUID, now: datetime) -> list[RefreshToken]:
+        stmt = select(RefreshToken).where(
+            RefreshToken.usuario_id == usuario_id,
+            RefreshToken.revoked_at.is_(None),
+            RefreshToken.expires_at > now,
+        )
+        result = await self.session.execute(stmt)
+        return list(result.scalars().all())
+
+    async def get_own_by_id(self, token_id: uuid.UUID, usuario_id: uuid.UUID) -> RefreshToken | None:
+        stmt = select(RefreshToken).where(
+            RefreshToken.id == token_id,
+            RefreshToken.usuario_id == usuario_id,
+            RefreshToken.revoked_at.is_(None),
+            RefreshToken.expires_at > datetime.now(timezone.utc),
+        )
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
+
     async def get_by_token_hash(self, token_hash: str) -> RefreshToken | None:
         stmt = select(RefreshToken).where(RefreshToken.token_hash == token_hash)
         result = await self.session.execute(stmt)

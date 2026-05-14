@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { usuariosApi, type ChangePasswordData, type UpdateProfileData } from '@/api/usuarios';
+import { useActiveSessions, useRevokeAllSessions, useRevokeSession } from '@/hooks/useSessions';
 import { useAuthStore } from '@/store/authStore';
 import { useUIStore } from '@/store/uiStore';
 
@@ -104,6 +105,13 @@ export function ProfilePage() {
     }
     changePasswordMutation.mutate(passwordForm);
   };
+
+  // -----------------------------------------------------------------------
+  // Sessions
+  // -----------------------------------------------------------------------
+  const { data: sessions, isLoading: sessionsLoading } = useActiveSessions();
+  const revokeSessionMutation = useRevokeSession();
+  const revokeAllMutation = useRevokeAllSessions();
 
   // -----------------------------------------------------------------------
   // Delete account
@@ -317,6 +325,59 @@ export function ProfilePage() {
               {changePasswordMutation.isPending ? 'Cambiando...' : 'Cambiar contraseña'}
             </button>
           </form>
+        </div>
+
+        {/* ----------------------------------------------------------------
+            Active sessions
+        ---------------------------------------------------------------- */}
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-slate-800">Sesiones activas</h2>
+            <button
+              onClick={() => revokeAllMutation.mutate()}
+              disabled={revokeAllMutation.isPending}
+              className="text-sm text-red-500 hover:text-red-600 font-medium disabled:opacity-50"
+            >
+              {revokeAllMutation.isPending ? 'Cerrando...' : 'Cerrar todas las sesiones'}
+            </button>
+          </div>
+
+          {sessionsLoading ? (
+            <p className="text-sm text-slate-400">Cargando sesiones...</p>
+          ) : !sessions || sessions.length === 0 ? (
+            <p className="text-sm text-slate-400">No hay sesiones activas.</p>
+          ) : (
+            <ul className="space-y-3">
+              {sessions.map((session) => (
+                <li
+                  key={session.id}
+                  className="flex items-center justify-between rounded-lg border border-slate-100 px-4 py-3"
+                >
+                  <div className="text-sm text-slate-700 space-y-0.5">
+                    <p>
+                      <span className="text-slate-400 text-xs uppercase tracking-wide mr-2">
+                        Iniciada
+                      </span>
+                      {new Date(session.created_at).toLocaleString('es-AR')}
+                    </p>
+                    <p>
+                      <span className="text-slate-400 text-xs uppercase tracking-wide mr-2">
+                        Expira
+                      </span>
+                      {new Date(session.expires_at).toLocaleString('es-AR')}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => revokeSessionMutation.mutate(session.id)}
+                    disabled={revokeSessionMutation.isPending}
+                    className="ml-4 text-sm text-orange-500 hover:text-orange-600 font-medium disabled:opacity-50 shrink-0"
+                  >
+                    {revokeSessionMutation.isPending ? 'Revocando...' : 'Revocar'}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
         {/* ----------------------------------------------------------------
