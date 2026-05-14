@@ -33,6 +33,7 @@ from app.modules.auth.router import router as auth_router  # noqa: E402
 from app.modules.categorias.router import router as categorias_router  # noqa: E402
 from app.modules.direcciones.router import router as direcciones_router  # noqa: E402
 from app.modules.ingredientes.router import router as ingredientes_router  # noqa: E402
+from app.modules.pagos.router import router as pagos_router  # noqa: E402
 from app.modules.pedidos.router import router as pedidos_router  # noqa: E402
 from app.modules.productos.router import router as productos_router  # noqa: E402
 
@@ -40,5 +41,6 @@ app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(categorias_router, prefix="/api/v1/categorias", tags=["categorias"])
 app.include_router(direcciones_router, prefix="/api/v1/direcciones", tags=["direcciones"])
 app.include_router(ingredientes_router, prefix="/api/v1/ingredientes", tags=["ingredientes"])
+app.include_router(pagos_router, prefix="/api/v1/pagos", tags=["pagos"])
 app.include_router(pedidos_router, prefix="/api/v1/pedidos", tags=["pedidos"])
 app.include_router(productos_router, prefix="/api/v1/productos", tags=["productos"])

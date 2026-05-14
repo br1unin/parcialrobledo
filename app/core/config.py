@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     MP_ACCESS_TOKEN: str = "test"
     MP_PUBLIC_KEY: str = "test"
     MP_NOTIFICATION_URL: str = "http://localhost:8000/api/v1/pagos/webhook"
+    MP_WEBHOOK_SECRET: str = ""
 
     esquema_base_de_datos: str | None = Field(default=None, exclude=True)
     usuario_base_de_datos: str | None = Field(default=None, exclude=True)

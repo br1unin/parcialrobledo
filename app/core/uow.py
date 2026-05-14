@@ -75,6 +75,11 @@ class UnitOfWork:
         from app.modules.pedidos.repository import HistorialRepository
         return HistorialRepository(self.session)
 
+    @property
+    def pagos(self):
+        from app.modules.pagos.repository import PagoRepository
+        return PagoRepository(self.session)
+
 
 async def get_uow() -> AsyncGenerator[UnitOfWork, None]:
     async with UnitOfWork() as uow:

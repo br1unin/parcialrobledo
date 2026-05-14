@@ -257,6 +257,21 @@ async def get_historial(
     ]
 
 
+async def confirm_pedido(uow: UnitOfWork, pedido_id: uuid.UUID) -> None:
+    """Transition a PENDIENTE pedido to CONFIRMADO, called exclusively by the payment webhook."""
+    pedido = await uow.pedidos.get_by_id(pedido_id)
+    if pedido is None:
+        return
+
+    # Idempotent: already confirmed, nothing to do
+    if pedido.estado_codigo == "CONFIRMADO":
+        return
+
+    pedido.estado_codigo = "CONFIRMADO"
+    await uow.pedidos.update(pedido)
+    await uow.historial_pedido.append(pedido_id, "CONFIRMADO", "Pago confirmado por MercadoPago")
+
+
 async def advance_estado(
     uow: UnitOfWork,
     pedido_id: uuid.UUID,

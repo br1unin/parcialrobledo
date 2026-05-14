@@ -5,6 +5,7 @@ import { AxiosError } from 'axios';
 
 import { direccionesApi } from '@/features/direcciones/api';
 import { pedidosApi } from '@/features/pedidos/api';
+import { pagosApi } from '@/features/pagos/api';
 import { useCartStore } from '@/store/cartStore';
 
 export function CheckoutPage() {
@@ -13,7 +14,6 @@ export function CheckoutPage() {
   const subtotal = useCartStore((s) => s.subtotal);
   const costoEnvio = useCartStore((s) => s.costoEnvio);
   const total = useCartStore((s) => s.total);
-  const clearCart = useCartStore((s) => s.clearCart);
 
   const [selectedDireccionId, setSelectedDireccionId] = useState<string>('');
   const [notas, setNotas] = useState('');
@@ -39,7 +39,7 @@ export function CheckoutPage() {
     setError(null);
 
     try {
-      const response = await pedidosApi.create({
+      const pedido = await pedidosApi.create({
         direccion_entrega_id: selectedDireccionId,
         items: items.map((item) => ({
           producto_id: String(item.productoId),
@@ -49,16 +49,17 @@ export function CheckoutPage() {
         notas: notas.trim() || undefined,
       });
 
-      clearCart();
-      navigate(`/mis-pedidos/${response.id}`);
+      const preference = await pagosApi.createPreference(String(pedido.id));
+
+      // Redirect to MercadoPago hosted payment page
+      window.location.href = preference.init_point;
     } catch (err) {
       if (err instanceof AxiosError) {
         const detail = err.response?.data?.detail;
-        setError(typeof detail === 'string' ? detail : 'Error al confirmar el pedido');
+        setError(typeof detail === 'string' ? detail : 'Error al procesar el pedido');
       } else {
         setError('Error inesperado. Intenta de nuevo.');
       }
-    } finally {
       setSubmitting(false);
     }
   };
@@ -167,7 +168,7 @@ export function CheckoutPage() {
             disabled={submitting || !selectedDireccionId || items.length === 0}
             className="w-full px-5 py-3 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-xl font-semibold transition-colors"
           >
-            {submitting ? 'Procesando…' : 'Confirmar pedido'}
+            {submitting ? 'Redirigiendo a MercadoPago…' : 'Pagar con MercadoPago'}
           </button>
         </form>
       </div>

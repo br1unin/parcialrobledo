@@ -11,6 +11,7 @@ import { DireccionesPage } from '@/pages/DireccionesPage';
 import { IngredientesPage } from '@/pages/IngredientesPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MisPedidosPage } from '@/pages/MisPedidosPage';
+import { PaymentPage } from '@/pages/PaymentPage';
 import { PedidoDetailPage } from '@/pages/PedidoDetailPage';
 import { ProductosAdminPage } from '@/pages/ProductosAdminPage';
 import { RegisterPage } from '@/pages/RegisterPage';
@@ -156,6 +157,14 @@ export function Router() {
           element={
             <PrivateRoute>
               <CheckoutPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/payment"
+          element={
+            <PrivateRoute>
+              <PaymentPage />
             </PrivateRoute>
           }
         />
