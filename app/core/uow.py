@@ -80,6 +80,21 @@ class UnitOfWork:
         from app.modules.pagos.repository import PagoRepository
         return PagoRepository(self.session)
 
+    @property
+    def roles_repo(self):
+        from app.modules.admin.repository import RolRepository
+        return RolRepository(self.session)
+
+    @property
+    def formas_pago_repo(self):
+        from app.modules.admin.repository import FormaPagoRepository
+        return FormaPagoRepository(self.session)
+
+    @property
+    def estados_pedido_repo(self):
+        from app.modules.admin.repository import EstadoPedidoRepository
+        return EstadoPedidoRepository(self.session)
+
 
 async def get_uow() -> AsyncGenerator[UnitOfWork, None]:
     async with UnitOfWork() as uow:

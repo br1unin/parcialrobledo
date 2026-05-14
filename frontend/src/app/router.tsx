@@ -4,6 +4,8 @@ import { CartDrawer } from '@/features/carrito/ui/CartDrawer';
 import { CartIcon } from '@/features/carrito/ui/CartIcon';
 import { ConfirmModal } from '@/shared/ui/ConfirmModal';
 import { ProductoCatalogPage } from '@/features/productos/ui/ProductoCatalogPage';
+import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
+import { AdminPage } from '@/pages/admin/AdminPage';
 import { CategoriasPage } from '@/pages/CategoriasPage';
 import { CarritoPage } from '@/pages/CarritoPage';
 import { CheckoutPage } from '@/pages/CheckoutPage';
@@ -16,6 +18,7 @@ import { PedidoDetailPage } from '@/pages/PedidoDetailPage';
 import { ProductosAdminPage } from '@/pages/ProductosAdminPage';
 import { ProfilePage } from '@/pages/ProfilePage';
 import { RegisterPage } from '@/pages/RegisterPage';
+import { AdminRoute } from '@/shared/ui/AdminRoute';
 import { PrivateRoute } from '@/shared/ui/PrivateRoute';
 import { useAuthStore } from '@/store/authStore';
 
@@ -88,6 +91,22 @@ function HomePage() {
                 className="px-4 py-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-sm font-medium text-blue-700 transition-colors"
               >
                 Productos Admin
+              </Link>
+            </>
+          )}
+          {user?.roles.includes('ADMIN') && (
+            <>
+              <Link
+                to="/admin"
+                className="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg text-sm font-medium text-indigo-700 transition-colors"
+              >
+                Panel Admin
+              </Link>
+              <Link
+                to="/admin/dashboard"
+                className="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-lg text-sm font-medium text-indigo-700 transition-colors"
+              >
+                Dashboard
               </Link>
             </>
           )}
@@ -197,6 +216,22 @@ export function Router() {
             <PrivateRoute>
               <ProfilePage />
             </PrivateRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <AdminPage />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminRoute>
+              <AdminDashboardPage />
+            </AdminRoute>
           }
         />
         <Route

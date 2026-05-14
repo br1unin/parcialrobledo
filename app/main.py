@@ -29,6 +29,7 @@ app.add_middleware(
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+from app.modules.admin.router import router as admin_router  # noqa: E402
 from app.modules.auth.router import router as auth_router  # noqa: E402
 from app.modules.categorias.router import router as categorias_router  # noqa: E402
 from app.modules.direcciones.router import router as direcciones_router  # noqa: E402
@@ -38,6 +39,7 @@ from app.modules.pedidos.router import router as pedidos_router  # noqa: E402
 from app.modules.productos.router import router as productos_router  # noqa: E402
 from app.modules.usuarios.router import router as usuarios_router  # noqa: E402
 
+app.include_router(admin_router, prefix="/api/v1")
 app.include_router(auth_router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(categorias_router, prefix="/api/v1/categorias", tags=["categorias"])
 app.include_router(direcciones_router, prefix="/api/v1/direcciones", tags=["direcciones"])
