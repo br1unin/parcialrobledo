@@ -21,7 +21,7 @@ The system SHALL create a new user account when valid registration data is provi
 ---
 
 ### Requirement: User login with double token
-The system SHALL authenticate users via email and password, returning an access token (JWT, 30 min, HS256) and a refresh token (UUID v4, stored in BD, 7 days). The error response MUST be identical for "email not found" and "wrong password" to prevent user enumeration.
+The system SHALL authenticate users via email and password, returning an access token (JWT, 30 min, HS256) and a refresh token (UUID v4, stored in BD, 7 days). The error response MUST be identical for "email not found", "wrong password", and "soft-deleted user" to prevent user enumeration.
 
 #### Scenario: Successful login
 - **WHEN** POST /api/v1/auth/login with valid email and password
@@ -35,11 +35,13 @@ The system SHALL authenticate users via email and password, returning an access 
 - **WHEN** POST /api/v1/auth/login with an email not in the system
 - **THEN** system returns HTTP 401 with generic message "Credenciales inválidas" (same as wrong password)
 
+#### Scenario: Soft-deleted user attempts login
+- **WHEN** POST /api/v1/auth/login with credentials of a user whose deleted_at is not null
+- **THEN** system returns HTTP 401 with generic message "Credenciales inválidas" (same as invalid credentials)
+
 #### Scenario: Rate limit exceeded
 - **WHEN** the same IP makes more than 5 login requests within 15 minutes
 - **THEN** system returns HTTP 429 with Retry-After header
-
----
 
 ### Requirement: Refresh token rotation
 The system SHALL issue a new access/refresh token pair when a valid, non-revoked refresh token is provided. The used token MUST be revoked immediately (rotación). A replay attack MUST revoke all refresh tokens for that user.
