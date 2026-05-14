@@ -1,3 +1,12 @@
+import type { UserResponse } from '@/shared/types';
+
+export type AdminUserListResponse = {
+  items: UserResponse[];
+  total: number;
+  skip: number;
+  limit: number;
+};
+
 export type Rol = {
   codigo: string;
   nombre: string;
