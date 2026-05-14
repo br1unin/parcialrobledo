@@ -25,8 +25,9 @@ export function CarritoPage() {
   const handleCheckout = () => {
     if (!isAuthenticated) {
       navigate('/login');
+      return;
     }
-    // Checkout functionality implemented in us-005
+    navigate('/checkout');
   };
 
   return (

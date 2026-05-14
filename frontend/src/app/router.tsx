@@ -152,6 +152,30 @@ export function Router() {
           }
         />
         <Route
+          path="/checkout"
+          element={
+            <PrivateRoute>
+              <CheckoutPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/mis-pedidos"
+          element={
+            <PrivateRoute>
+              <MisPedidosPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/mis-pedidos/:id"
+          element={
+            <PrivateRoute>
+              <PedidoDetailPage />
+            </PrivateRoute>
+          }
+        />
+        <Route
           path="/*"
           element={
             <PrivateRoute>
