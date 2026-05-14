@@ -1,4 +1,4 @@
-## MODIFIED Requirements
+## ADDED Requirements
 
 ### Requirement: Order state machine enforces valid transitions
 The system SHALL enforce a well-defined FSM for pedido state. Valid transitions are: PENDIENTE → CONFIRMADO (via payment webhook only), CONFIRMADO → EN_CAMINO (PEDIDOS/ADMIN), EN_CAMINO → ENTREGADO (PEDIDOS/ADMIN). Cancellation is allowed from PENDIENTE (CLIENT/PEDIDOS/ADMIN) or CONFIRMADO (PEDIDOS/ADMIN only). ENTREGADO and CANCELADO are terminal states.
