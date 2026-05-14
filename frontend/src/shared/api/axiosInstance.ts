@@ -7,7 +7,8 @@ type RetryableRequestConfig = InternalAxiosRequestConfig & {
 };
 
 type RefreshResponse = {
-  accessToken: string;
+  access_token: string;
+  refresh_token: string;
 };
 
 export const axiosInstance = axios.create({
@@ -34,13 +35,24 @@ axiosInstance.interceptors.response.use(
 
     originalRequest._retry = true;
 
+    const refreshToken = useAuthStore.getState().refreshToken;
+    if (!refreshToken) {
+      useAuthStore.getState().logout();
+      window.location.replace('/login');
+      return Promise.reject(error);
+    }
+
     try {
-      const response = await axiosInstance.post<RefreshResponse>('/api/v1/auth/refresh');
-      useAuthStore.getState().updateTokens(response.data.accessToken);
-      originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+      const response = await axiosInstance.post<RefreshResponse>('/api/v1/auth/refresh', {
+        refresh_token: refreshToken,
+      });
+      const { access_token, refresh_token } = response.data;
+      useAuthStore.getState().updateTokens(access_token, refresh_token);
+      originalRequest.headers.Authorization = `Bearer ${access_token}`;
       return axiosInstance(originalRequest);
     } catch (refreshError) {
       useAuthStore.getState().logout();
+      window.location.replace('/login');
       return Promise.reject(refreshError);
     }
   },

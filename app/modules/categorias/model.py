@@ -1,5 +1,5 @@
-from datetime import datetime
 import uuid
+from datetime import datetime
 
 from sqlalchemy import Column, DateTime, ForeignKey, String, Text, func
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
@@ -13,12 +13,11 @@ class Categoria(SQLModel, table=True):
         default_factory=uuid.uuid4,
         sa_column=Column(PG_UUID(as_uuid=True), primary_key=True),
     )
-    codigo: str = Field(sa_column=Column(String(50), unique=True, nullable=False, index=True))
     nombre: str = Field(sa_column=Column(String(100), nullable=False))
     descripcion: str | None = Field(default=None, sa_column=Column(Text))
-    parent_id: uuid.UUID | None = Field(
+    padre_id: uuid.UUID | None = Field(
         default=None,
-        sa_column=Column(PG_UUID(as_uuid=True), ForeignKey("categoria.id")),
+        sa_column=Column(PG_UUID(as_uuid=True), ForeignKey("categoria.id", ondelete="RESTRICT")),
     )
     imagen_url: str | None = Field(default=None, sa_column=Column(String(500)))
     deleted_at: datetime | None = Field(default=None, sa_column=Column(DateTime(timezone=True)))

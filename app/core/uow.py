@@ -30,6 +30,51 @@ class UnitOfWork:
     async def rollback(self):
         await self.session.rollback()
 
+    @property
+    def usuarios(self):
+        from app.modules.usuarios.repository import UsuarioRepository
+        return UsuarioRepository(self.session)
+
+    @property
+    def refresh_tokens(self):
+        from app.modules.refreshtokens.repository import RefreshTokenRepository
+        return RefreshTokenRepository(self.session)
+
+    @property
+    def categorias(self):
+        from app.modules.categorias.repository import CategoriaRepository
+        return CategoriaRepository(self.session)
+
+    @property
+    def ingredientes(self):
+        from app.modules.ingredientes.repository import IngredienteRepository
+        return IngredienteRepository(self.session)
+
+    @property
+    def productos(self):
+        from app.modules.productos.repository import ProductoRepository
+        return ProductoRepository(self.session)
+
+    @property
+    def direcciones(self):
+        from app.modules.direcciones.repository import DireccionRepository
+        return DireccionRepository(self.session)
+
+    @property
+    def pedidos(self):
+        from app.modules.pedidos.repository import PedidoRepository
+        return PedidoRepository(self.session)
+
+    @property
+    def detalles_pedido(self):
+        from app.modules.pedidos.repository import DetallePedidoRepository
+        return DetallePedidoRepository(self.session)
+
+    @property
+    def historial_pedido(self):
+        from app.modules.pedidos.repository import HistorialRepository
+        return HistorialRepository(self.session)
+
 
 async def get_uow() -> AsyncGenerator[UnitOfWork, None]:
     async with UnitOfWork() as uow:

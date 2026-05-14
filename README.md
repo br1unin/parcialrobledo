@@ -52,7 +52,6 @@ Esto genera la carpeta `openspec/` donde van a vivir todos los artefactos del pr
 ### 3. Backend
 
 ```bash
-cd backend
 cp .env.example .env
 # Completar las variables de entorno en .env
 
@@ -113,16 +112,16 @@ us-008-direcciones         ← direcciones de entrega
 
 ## Variables de entorno
 
-Crear `backend/.env` a partir de `backend/.env.example`:
+Crear `.env` a partir de `.env.example` en la raíz del proyecto:
 
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/foodstore
+DATABASE_URL=postgresql+asyncpg://user:password@localhost:5432/foodstore
 SECRET_KEY=tu-clave-secreta-de-64-caracteres-minimo
 ACCESS_TOKEN_EXPIRE_MINUTES=30
 REFRESH_TOKEN_EXPIRE_DAYS=7
 MP_ACCESS_TOKEN=TEST-tu-token-de-mercadopago
 MP_PUBLIC_KEY=TEST-tu-public-key-de-mercadopago
-CORS_ORIGINS=http://localhost:5173
+CORS_ORIGINS=["http://localhost:5173"]
 ```
 
 Crear `frontend/.env` a partir de `frontend/.env.example`:
