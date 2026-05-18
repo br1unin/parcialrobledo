@@ -14,6 +14,7 @@ export function ProductosAdminPage() {
   const [items, setItems] = useState<Producto[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
+  const [busqueda, setBusqueda] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -26,7 +27,9 @@ export function ProductosAdminPage() {
     setLoading(true);
     setError(null);
     try {
-      const data = await productosApi.list({ page, limit });
+      const params: Record<string, unknown> = { page, limit };
+      if (busqueda) params.busqueda = busqueda;
+      const data = await productosApi.list(params as Parameters<typeof productosApi.list>[0]);
       setItems(data.items);
       setTotal(data.total);
     } catch {
@@ -38,7 +41,7 @@ export function ProductosAdminPage() {
 
   useEffect(() => {
     fetchItems();
-  }, [page]);
+  }, [page, busqueda]);
 
   const handleEdit = (item: Producto) => {
     setEditing(item);
@@ -88,6 +91,17 @@ export function ProductosAdminPage() {
           >
             + Nuevo producto
           </button>
+        </div>
+
+        {/* Search */}
+        <div className="mb-4">
+          <input
+            type="text"
+            placeholder="Buscar producto..."
+            value={busqueda}
+            onChange={(e) => { setBusqueda(e.target.value); setPage(1); }}
+            className="w-full sm:w-72 px-4 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
+          />
         </div>
 
         <div className="bg-white rounded-2xl shadow p-4">

@@ -12,6 +12,8 @@ export function IngredientesPage() {
   const hasAccess = user?.roles.some((r) => r === 'ADMIN' || r === 'STOCK') ?? false;
 
   const [items, setItems] = useState<Ingrediente[]>([]);
+  const [busqueda, setBusqueda] = useState('');
+  const [soloAlergenos, setSoloAlergenos] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
@@ -57,6 +59,12 @@ export function IngredientesPage() {
     fetchItems();
   };
 
+  const filteredItems = items.filter((i) => {
+    const matchNombre = i.nombre.toLowerCase().includes(busqueda.toLowerCase());
+    const matchAlergeno = soloAlergenos ? i.es_alergeno : true;
+    return matchNombre && matchAlergeno;
+  });
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="max-w-3xl mx-auto py-8 px-4">
@@ -75,11 +83,32 @@ export function IngredientesPage() {
           </button>
         </div>
 
+        {/* Filters */}
+        <div className="mb-4 flex flex-wrap gap-3 items-center">
+          <input
+            type="text"
+            placeholder="Buscar ingrediente..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="w-full sm:w-64 px-4 py-2 text-sm rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-300 bg-white"
+          />
+          <button
+            onClick={() => setSoloAlergenos((v) => !v)}
+            className={`px-3 py-2 rounded-xl text-xs font-semibold border transition-all ${
+              soloAlergenos
+                ? 'bg-red-500 text-white border-red-500'
+                : 'bg-white text-red-600 border-red-200 hover:border-red-400'
+            }`}
+          >
+            Solo alérgenos
+          </button>
+        </div>
+
         <div className="bg-white rounded-2xl shadow p-4">
           {loading && <p className="text-sm text-slate-400 py-4">Cargando…</p>}
           {error && <p className="text-sm text-red-600 py-4">{error}</p>}
           {!loading && !error && (
-            <IngredienteTable items={items} onEdit={handleEdit} onDelete={handleDelete} />
+            <IngredienteTable items={filteredItems} onEdit={handleEdit} onDelete={handleDelete} />
           )}
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { pedidosApi } from '@/features/pedidos/api';
@@ -59,7 +60,13 @@ function PedidoRow({
       <div className="flex items-center gap-3 shrink-0">
         <span className="font-bold text-slate-900 text-sm">{ARS.format(Number(item.total))}</span>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
+          <Link
+            to={`/mis-pedidos/${item.id}`}
+            className="px-3 py-1.5 rounded-lg border border-slate-200 text-slate-600 hover:border-orange-300 hover:text-orange-500 text-xs font-semibold transition-colors"
+          >
+            Ver detalle
+          </Link>
           {nextAction && (
             <button
               onClick={() => onAvanzar(item.id, nextAction.estado)}
