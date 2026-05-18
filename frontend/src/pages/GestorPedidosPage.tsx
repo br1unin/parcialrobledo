@@ -8,6 +8,8 @@ import { useUIStore } from '@/store/uiStore';
 
 const ARS = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 });
 
+const ESTADOS = ['PENDIENTE', 'CONFIRMADO', 'EN_CAMINO', 'ENTREGADO', 'CANCELADO'] as const;
+
 const ESTADO_COLORS: Record<string, string> = {
   PENDIENTE:  'bg-yellow-100 text-yellow-800',
   CONFIRMADO: 'bg-blue-100 text-blue-800',
@@ -91,7 +93,8 @@ function PedidoRow({
 
 export function GestorPedidosPage() {
   const [page, setPage] = useState(1);
-  const limit = 15;
+  const [estadoFiltro, setEstadoFiltro] = useState('');
+  const limit = 50;
   const queryClient = useQueryClient();
   const openConfirmModal = useUIStore((s) => s.openConfirmModal);
 
@@ -99,6 +102,10 @@ export function GestorPedidosPage() {
     queryKey: ['gestor-pedidos', page],
     queryFn: () => pedidosApi.list(page, limit),
   });
+
+  const visibleItems = estadoFiltro
+    ? (data?.items ?? []).filter((i) => i.estado_codigo === estadoFiltro)
+    : (data?.items ?? []);
 
   const totalPages = data ? Math.ceil(data.total / limit) : 1;
 
@@ -121,8 +128,37 @@ export function GestorPedidosPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-slate-900">Gestión de Pedidos</h1>
         {data && (
-          <span className="text-xs text-slate-400">{data.total} pedido{data.total !== 1 ? 's' : ''} en total</span>
+          <span className="text-xs text-slate-400">
+            {estadoFiltro ? `${visibleItems.length} de ${data.total}` : data.total} pedido{data.total !== 1 ? 's' : ''}
+          </span>
         )}
+      </div>
+
+      {/* Estado filter chips */}
+      <div className="flex gap-2 flex-wrap">
+        <button
+          onClick={() => setEstadoFiltro('')}
+          className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+            estadoFiltro === ''
+              ? 'bg-slate-800 text-white border-slate-800'
+              : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+          }`}
+        >
+          Todos
+        </button>
+        {ESTADOS.map((e) => (
+          <button
+            key={e}
+            onClick={() => setEstadoFiltro(estadoFiltro === e ? '' : e)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+              estadoFiltro === e
+                ? ESTADO_COLORS[e] + ' border-transparent shadow-sm'
+                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-400'
+            }`}
+          >
+            {e.replace('_', ' ')}
+          </button>
+        ))}
       </div>
 
       {isLoading && (
@@ -139,16 +175,18 @@ export function GestorPedidosPage() {
         </div>
       )}
 
-      {data && data.items.length === 0 && (
+      {data && visibleItems.length === 0 && (
         <div className="bg-white rounded-xl border border-slate-100 p-12 text-center space-y-2">
-          <p className="text-slate-500 font-medium">No hay pedidos aún</p>
+          <p className="text-slate-500 font-medium">
+            {estadoFiltro ? `No hay pedidos en estado ${estadoFiltro.replace('_', ' ')}` : 'No hay pedidos aún'}
+          </p>
         </div>
       )}
 
-      {data && data.items.length > 0 && (
+      {data && visibleItems.length > 0 && (
         <>
           <div className="space-y-3">
-            {data.items.map((item) => (
+            {visibleItems.map((item) => (
               <PedidoRow
                 key={item.id}
                 item={item}
