@@ -59,7 +59,7 @@ async def get_historial(
 async def advance_estado(
     pedido_id: uuid.UUID,
     data: EstadoUpdate,
-    current_user: CurrentUser = Depends(get_current_user),
+    current_user: CurrentUser = Depends(require_role(["CLIENT", "PEDIDOS", "ADMIN"])),
     uow: UnitOfWork = Depends(get_uow),
 ):
     return await service.advance_estado(uow, pedido_id, current_user, data)

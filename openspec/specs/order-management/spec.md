@@ -243,3 +243,29 @@ The system SHALL enforce a well-defined FSM for pedido state. Valid transitions 
 - **WHEN** a CLIENT attempts to cancel a pedido in CONFIRMADO state
 - **THEN** the system SHALL return HTTP 403
 
+---
+
+### Requirement: Botón cancelar en Mis Pedidos (CLIENT UI)
+El sistema SHALL mostrar u ocultar el botón "Cancelar pedido" en `MisPedidosPage` según el estado del pedido.
+
+#### Scenario: Botón cancelar visible en MisPedidosPage
+- **WHEN** el cliente ve un pedido propio en estado PENDIENTE
+- **THEN** se muestra un botón "Cancelar pedido" con diálogo de confirmación
+
+#### Scenario: Botón cancelar oculto en otros estados
+- **WHEN** el pedido está en estado CONFIRMADO, EN_CAMINO, ENTREGADO o CANCELADO
+- **THEN** el botón de cancelar no aparece en la vista del cliente
+
+---
+
+### Requirement: Protección de endpoint de cambio de estado por rol
+El sistema SHALL restringir el endpoint `PATCH /pedidos/{id}/estado` a usuarios autenticados con roles autorizados.
+
+#### Scenario: Avance de estado rechazado para CLIENT
+- **WHEN** un CLIENT intenta avanzar el estado de un pedido a EN_CAMINO o ENTREGADO
+- **THEN** el sistema retorna 403 Forbidden
+
+#### Scenario: Avance de estado permitido para PEDIDOS y ADMIN
+- **WHEN** un usuario con rol PEDIDOS o ADMIN avanza el estado de un pedido dentro de las transiciones válidas
+- **THEN** el sistema acepta la transición y retorna 200
+

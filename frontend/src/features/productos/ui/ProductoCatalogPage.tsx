@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { categoriasApi } from '@/features/categorias/api';
 import type { CategoriaNode } from '@/features/categorias/types';
+import { ingredientesApi } from '@/features/ingredientes/api';
+import type { Ingrediente } from '@/features/ingredientes/types';
 import { productosApi } from '../api';
 import type { Producto } from '../types';
 import { ProductoCard } from './ProductoCard';
@@ -36,6 +38,8 @@ function SkeletonCard() {
 export function ProductoCatalogPage() {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [categorias, setCategorias] = useState<CategoriaNode[]>([]);
+  const [alergenos, setAlergenos] = useState<Ingrediente[]>([]);
+  const [excluirAlergenos, setExcluirAlergenos] = useState<string[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [busqueda, setBusqueda] = useState('');
@@ -45,6 +49,7 @@ export function ProductoCatalogPage() {
 
   useEffect(() => {
     categoriasApi.getTree().then((data) => setCategorias(data)).catch(() => {});
+    ingredientesApi.list({ es_alergeno: true, limit: 50 }).then((r) => setAlergenos(r.items)).catch(() => {});
   }, []);
 
   const fetchProductos = async () => {
@@ -53,6 +58,7 @@ export function ProductoCatalogPage() {
       const params: Record<string, unknown> = { page, limit };
       if (busqueda) params.busqueda = busqueda;
       if (categoriaId) params.categoria_id = categoriaId;
+      if (excluirAlergenos.length > 0) params.excluir_alergenos = excluirAlergenos.join(',');
       const data = await productosApi.list(params as Parameters<typeof productosApi.list>[0]);
       setProductos(data.items);
       setTotal(data.total);
@@ -61,7 +67,14 @@ export function ProductoCatalogPage() {
     }
   };
 
-  useEffect(() => { fetchProductos(); }, [page, busqueda, categoriaId]);
+  useEffect(() => { fetchProductos(); }, [page, busqueda, categoriaId, excluirAlergenos]);
+
+  const toggleAlergeno = (id: string) => {
+    setExcluirAlergenos((prev) =>
+      prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
+    );
+    setPage(1);
+  };
 
   const totalPages = Math.ceil(total / limit);
   const flatCats = flattenCategories(categorias).filter((c) => !c.padre_id);
@@ -118,6 +131,28 @@ export function ProductoCatalogPage() {
               {c.nombre}
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Allergen chips */}
+      {alergenos.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">Excluir alérgenos</p>
+          <div className="flex gap-2 flex-wrap">
+            {alergenos.map((a) => (
+              <button
+                key={a.id}
+                onClick={() => toggleAlergeno(a.id)}
+                className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                  excluirAlergenos.includes(a.id)
+                    ? 'bg-red-500 text-white border-red-500 shadow-sm'
+                    : 'bg-white text-red-600 border-red-200 hover:border-red-400 hover:bg-red-50'
+                }`}
+              >
+                {excluirAlergenos.includes(a.id) ? '✕ ' : ''}{a.nombre}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

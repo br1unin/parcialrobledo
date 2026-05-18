@@ -10,6 +10,7 @@ import { CategoriasPage } from '@/pages/CategoriasPage';
 import { CarritoPage } from '@/pages/CarritoPage';
 import { CheckoutPage } from '@/pages/CheckoutPage';
 import { DireccionesPage } from '@/pages/DireccionesPage';
+import { GestorPedidosPage } from '@/pages/GestorPedidosPage';
 import { IngredientesPage } from '@/pages/IngredientesPage';
 import { LoginPage } from '@/pages/LoginPage';
 import { MisPedidosPage } from '@/pages/MisPedidosPage';
@@ -21,6 +22,14 @@ import { RegisterPage } from '@/pages/RegisterPage';
 import { AdminRoute } from '@/shared/ui/AdminRoute';
 import { AppLayout } from '@/shared/ui/AppLayout';
 import { useAuthStore } from '@/store/authStore';
+
+function GestorRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const hasRole = useAuthStore((s) => s.hasRole);
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!hasRole('PEDIDOS') && !hasRole('ADMIN')) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
 
 function PublicRoute({ children }: { children: React.ReactNode }) {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -54,6 +63,10 @@ export function Router() {
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/mis-pedidos" element={<MisPedidosPage />} />
           <Route path="/mis-pedidos/:id" element={<PedidoDetailPage />} />
+          <Route
+            path="/gestor-pedidos"
+            element={<GestorRoute><GestorPedidosPage /></GestorRoute>}
+          />
           <Route path="/perfil" element={<ProfilePage />} />
           <Route path="/admin/ingredientes" element={<IngredientesPage />} />
           <Route path="/admin/productos" element={<ProductosAdminPage />} />

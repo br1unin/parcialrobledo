@@ -56,6 +56,7 @@ class PedidoListItem(BaseModel):
 
     id: uuid.UUID
     estado_codigo: str
+    nombre_cliente_snapshot: str | None = None
     total: Decimal
     created_at: datetime
 

@@ -193,6 +193,7 @@ async def list_pedidos_admin(
         PedidoListItem(
             id=p.id,
             estado_codigo=p.estado_codigo,
+            nombre_cliente_snapshot=p.nombre_cliente_snapshot,
             total=p.total,
             created_at=p.created_at,
         )

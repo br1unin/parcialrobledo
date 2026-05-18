@@ -41,6 +41,7 @@ export interface PedidoResponse {
 export interface PedidoListItem {
   id: string;
   estado_codigo: string;
+  nombre_cliente_snapshot?: string | null;
   total: number;
   created_at: string;
 }
