@@ -56,7 +56,6 @@ async def create_preference(
             "failure": f"{settings.MP_NOTIFICATION_URL.replace('/api/v1/pagos/webhook', '')}/payment",
             "pending": f"{settings.MP_NOTIFICATION_URL.replace('/api/v1/pagos/webhook', '')}/payment",
         },
-        "auto_return": "approved",
     }
 
     # Wrap synchronous SDK call with asyncio.to_thread

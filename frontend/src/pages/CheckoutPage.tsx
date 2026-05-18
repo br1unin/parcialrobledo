@@ -176,8 +176,8 @@ export function CheckoutPage() {
               >
                 <span>
                   {item.nombre} <span className="text-slate-400">× {item.cantidad}</span>
-                  {item.personalizacion.length > 0 && (
-                    <span className="text-slate-400 text-xs ml-1">(sin {item.personalizacion.join(', ')})</span>
+                  {item.personalizacionNombres?.length > 0 && (
+                    <span className="text-slate-400 text-xs ml-1">(sin {item.personalizacionNombres.join(', ')})</span>
                   )}
                 </span>
                 <span className="font-medium">{formatPrice(item.precio * item.cantidad)}</span>

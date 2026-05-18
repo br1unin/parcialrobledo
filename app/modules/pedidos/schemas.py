@@ -10,7 +10,7 @@ class ItemCreate(BaseModel):
 
     producto_id: uuid.UUID
     cantidad: int
-    personalizacion: list[int] = []
+    personalizacion: list[str] = []
 
 
 class PedidoCreate(BaseModel):
@@ -29,7 +29,7 @@ class DetalleResponse(BaseModel):
     nombre_snapshot: str
     precio_snapshot: Decimal
     cantidad: int
-    personalizacion: list[int]
+    personalizacion: list[str]
     subtotal: Decimal
 
 

@@ -8,6 +8,7 @@ export type CartItem = {
   cantidad: number;
   imagenUrl: string | null;
   personalizacion: number[];
+  personalizacionNombres: string[];
 };
 
 type CartState = {

@@ -69,7 +69,9 @@ export function Sidebar() {
         </div>
         <div>
           <span className="text-white font-bold text-base tracking-tight">Food Store</span>
-          <p className="text-[10px] text-slate-500 font-medium">Panel de gestión</p>
+          {(isAdmin || isAdminOrStock || isPedidosOrAdmin) && (
+            <p className="text-[10px] text-slate-500 font-medium">Panel de gestión</p>
+          )}
         </div>
       </div>
 

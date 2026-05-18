@@ -24,6 +24,10 @@ export function ProductoDetailModal({ producto, open, onClose }: Props) {
   };
 
   const handleAgregar = () => {
+    const nombresExcluidos = removibles
+      .filter((ing) => selectedExclusiones.includes(ing.id))
+      .map((ing) => ing.nombre);
+
     useCartStore.getState().addItem({
       productoId: producto.id as unknown as number,
       nombre: producto.nombre,
@@ -31,6 +35,7 @@ export function ProductoDetailModal({ producto, open, onClose }: Props) {
       cantidad,
       imagenUrl: producto.imagen_url,
       personalizacion: selectedExclusiones as unknown as number[],
+      personalizacionNombres: nombresExcluidos,
     });
     setCantidad(1);
     setSelectedExclusiones([]);

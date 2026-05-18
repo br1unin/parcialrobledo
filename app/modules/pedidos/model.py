@@ -50,7 +50,7 @@ class DetallePedido(SQLModel, table=True):
     nombre_snapshot: str = Field(sa_column=Column(String(200), nullable=False))
     precio_snapshot: Decimal = Field(sa_column=Column(Numeric(10, 2), nullable=False))
     cantidad: int = Field(sa_column=Column(Integer, nullable=False))
-    personalizacion: list[int] = Field(default_factory=list, sa_column=Column(ARRAY(Integer), nullable=False))
+    personalizacion: list[str] = Field(default_factory=list, sa_column=Column(ARRAY(Text), nullable=False))
     subtotal: Decimal = Field(sa_column=Column(Numeric(10, 2), nullable=False))
     created_at: datetime = Field(
         default_factory=datetime.utcnow,
