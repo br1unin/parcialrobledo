@@ -1,6 +1,7 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuthStore } from '@/store/authStore';
 import { Sidebar } from './Sidebar';
+import { CartFAB } from '@/features/carrito/ui/CartFAB';
 
 const PAGE_TITLES: Record<string, string> = {
   '/catalogo': 'Catálogo',
@@ -42,6 +43,7 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
+      <CartFAB />
     </div>
   );
 }

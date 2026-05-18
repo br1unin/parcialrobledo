@@ -8,7 +8,7 @@ from app.core.config import settings
 from app.core.security import CurrentUser
 from app.core.uow import UnitOfWork
 from app.modules.pagos.model import Pago
-from app.modules.pagos.schemas import PreferenceRequest, PreferenceResponse, WebhookPayload
+from app.modules.pagos.schemas import EfectivoRequest, EfectivoResponse, PreferenceRequest, PreferenceResponse, TransferenciaRequest, TransferenciaResponse, WebhookPayload
 
 
 def _get_sdk() -> mercadopago.SDK:
@@ -75,6 +75,76 @@ async def create_preference(
     return PreferenceResponse(
         init_point=response_body["init_point"],
         preference_id=response_body["id"],
+    )
+
+
+async def create_efectivo_payment(
+    uow: UnitOfWork,
+    current_user: CurrentUser,
+    data: EfectivoRequest,
+) -> EfectivoResponse:
+    pedido = await uow.pedidos.get_own(data.pedido_id, current_user.id)
+    if pedido is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido no encontrado")
+
+    if pedido.estado_codigo != "PENDIENTE":
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"El pedido está en estado '{pedido.estado_codigo}' y no puede ser pagado",
+        )
+
+    pago = Pago(
+        pedido_id=data.pedido_id,
+        forma_pago_codigo="EFECTIVO",
+        monto=pedido.total,
+        idempotency_key=f"efectivo-{data.pedido_id}",
+    )
+    await uow.pagos.create(pago)
+
+    from app.modules.pedidos.service import confirm_pedido
+    await confirm_pedido(uow, data.pedido_id)
+
+    return EfectivoResponse(
+        pedido_id=data.pedido_id,
+        forma_pago="EFECTIVO",
+        mensaje="Pedido confirmado. Abonás en efectivo al momento de la entrega.",
+    )
+
+
+async def create_transferencia_payment(
+    uow: UnitOfWork,
+    current_user: CurrentUser,
+    data: TransferenciaRequest,
+) -> TransferenciaResponse:
+    pedido = await uow.pedidos.get_own(data.pedido_id, current_user.id)
+    if pedido is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Pedido no encontrado")
+
+    if pedido.estado_codigo != "PENDIENTE":
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"El pedido está en estado '{pedido.estado_codigo}' y no puede ser pagado",
+        )
+
+    pago = Pago(
+        pedido_id=data.pedido_id,
+        forma_pago_codigo="TRANSFERENCIA",
+        monto=pedido.total,
+        idempotency_key=f"transferencia-{data.pedido_id}",
+    )
+    await uow.pagos.create(pago)
+
+    # Pedido queda en PENDIENTE hasta que el admin confirme la transferencia
+
+    return TransferenciaResponse(
+        pedido_id=data.pedido_id,
+        forma_pago="TRANSFERENCIA",
+        mensaje="Pedido registrado. Realizá la transferencia y nos comunicaremos para confirmarlo.",
+        cbu=settings.BANK_CBU,
+        alias=settings.BANK_ALIAS,
+        titular=settings.BANK_TITULAR,
+        banco=settings.BANK_BANCO,
+        monto=pedido.total,
     )
 
 

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 
 import { categoriasApi } from '@/features/categorias/api';
 import type { CategoriaNode } from '@/features/categorias/types';
@@ -14,6 +13,24 @@ function flattenCategories(nodes: CategoriaNode[]): CategoriaNode[] {
     result.push(...flattenCategories(n.children));
   }
   return result;
+}
+
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden animate-pulse">
+      <div className="w-full h-44 bg-slate-100" />
+      <div className="p-4 space-y-3">
+        <div className="h-4 bg-slate-100 rounded-full w-3/4" />
+        <div className="h-3 bg-slate-100 rounded-full w-full" />
+        <div className="h-3 bg-slate-100 rounded-full w-2/3" />
+        <div className="flex justify-between items-center pt-2">
+          <div className="h-5 bg-slate-100 rounded-full w-16" />
+          <div className="h-4 bg-slate-100 rounded-full w-12" />
+        </div>
+        <div className="h-9 bg-slate-100 rounded-xl w-full mt-1" />
+      </div>
+    </div>
+  );
 }
 
 export function ProductoCatalogPage() {
@@ -44,77 +61,124 @@ export function ProductoCatalogPage() {
     }
   };
 
-  useEffect(() => {
-    fetchProductos();
-  }, [page, busqueda, categoriaId]);
+  useEffect(() => { fetchProductos(); }, [page, busqueda, categoriaId]);
 
   const totalPages = Math.ceil(total / limit);
-  const flatCats = flattenCategories(categorias);
+  const flatCats = flattenCategories(categorias).filter((c) => !c.padre_id);
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <div className="max-w-5xl mx-auto py-8 px-4">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-slate-900">Catálogo</h1>
-          <Link to="/" className="text-sm text-slate-400 hover:text-slate-600">
-            Inicio
-          </Link>
-        </div>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-400 rounded-2xl p-6 text-white shadow-sm">
+        <h1 className="text-2xl font-bold mb-1">¿Qué querés comer hoy?</h1>
+        <p className="text-orange-100 text-sm">Elegí entre nuestros productos frescos y deliciosos</p>
 
-        <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        {/* Search */}
+        <div className="relative mt-4">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-orange-300 pointer-events-none"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+          </svg>
           <input
             type="text"
             placeholder="Buscar productos..."
             value={busqueda}
             onChange={(e) => { setBusqueda(e.target.value); setPage(1); }}
-            className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-white/20 backdrop-blur text-white placeholder-orange-200 text-sm focus:outline-none focus:ring-2 focus:ring-white/50 transition"
           />
-          <select
-            value={categoriaId}
-            onChange={(e) => { setCategoriaId(e.target.value); setPage(1); }}
-            className="border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400"
-          >
-            <option value="">Todas las categorías</option>
-            {flatCats.map((c) => (
-              <option key={c.id} value={c.id}>{c.nombre}</option>
-            ))}
-          </select>
         </div>
-
-        {loading ? (
-          <p className="text-sm text-slate-400 py-8 text-center">Cargando…</p>
-        ) : productos.length === 0 ? (
-          <p className="text-sm text-slate-400 py-8 text-center">No hay productos disponibles.</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {productos.map((p) => (
-              <ProductoCard key={p.id} producto={p} />
-            ))}
-          </div>
-        )}
-
-        {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-8">
-            <button
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
-              className="px-3 py-1 text-sm rounded-lg bg-slate-200 hover:bg-slate-300 disabled:opacity-40 transition-colors"
-            >
-              Anterior
-            </button>
-            <span className="px-3 py-1 text-sm text-slate-600">
-              {page} / {totalPages}
-            </span>
-            <button
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-              className="px-3 py-1 text-sm rounded-lg bg-slate-200 hover:bg-slate-300 disabled:opacity-40 transition-colors"
-            >
-              Siguiente
-            </button>
-          </div>
-        )}
       </div>
+
+      {/* Category chips */}
+      {flatCats.length > 0 && (
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <button
+            onClick={() => { setCategoriaId(''); setPage(1); }}
+            className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+              categoriaId === ''
+                ? 'bg-orange-500 text-white shadow-sm'
+                : 'bg-white text-slate-600 border border-slate-200 hover:border-orange-300 hover:text-orange-500'
+            }`}
+          >
+            Todo
+          </button>
+          {flatCats.map((c) => (
+            <button
+              key={c.id}
+              onClick={() => { setCategoriaId(c.id); setPage(1); }}
+              className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                categoriaId === c.id
+                  ? 'bg-orange-500 text-white shadow-sm'
+                  : 'bg-white text-slate-600 border border-slate-200 hover:border-orange-300 hover:text-orange-500'
+              }`}
+            >
+              {c.nombre}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Results label */}
+      {!loading && (
+        <p className="text-xs text-slate-400">
+          {total === 0 ? 'Sin resultados' : `${total} producto${total !== 1 ? 's' : ''} encontrado${total !== 1 ? 's' : ''}`}
+        </p>
+      )}
+
+      {/* Grid */}
+      {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)}
+        </div>
+      ) : productos.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
+          <span className="text-6xl">🍽️</span>
+          <p className="text-slate-500 font-medium">No encontramos productos</p>
+          <p className="text-slate-400 text-sm">Probá con otra búsqueda o categoría</p>
+          <button
+            onClick={() => { setBusqueda(''); setCategoriaId(''); setPage(1); }}
+            className="px-4 py-2 bg-orange-100 hover:bg-orange-200 text-orange-700 text-sm font-medium rounded-xl transition-colors"
+          >
+            Ver todos
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {productos.map((p) => <ProductoCard key={p.id} producto={p} />)}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-2 pt-2">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-xl bg-white border border-slate-200 hover:border-orange-300 hover:text-orange-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Anterior
+          </button>
+          <span className="px-4 py-2 text-sm text-slate-500 bg-white rounded-xl border border-slate-100">
+            {page} <span className="text-slate-300">/</span> {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-xl bg-white border border-slate-200 hover:border-orange-300 hover:text-orange-500 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+          >
+            Siguiente
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

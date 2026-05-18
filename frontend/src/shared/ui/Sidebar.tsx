@@ -1,5 +1,4 @@
 import { NavLink } from 'react-router-dom';
-import { CartIcon } from '@/features/carrito/ui/CartIcon';
 import { useAuthStore } from '@/store/authStore';
 
 const Icon = ({ d, className = 'w-[18px] h-[18px]' }: { d: string; className?: string }) => (
@@ -76,7 +75,6 @@ export function Sidebar() {
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         <SectionLabel label="Principal" />
         <NavItem to="/catalogo" icon={ICONS.catalog} label="Catálogo" />
-        <NavItem to="/carrito" icon={ICONS.cart} label="Carrito" badge={<CartIcon />} />
         <NavItem to="/mis-pedidos" icon={ICONS.orders} label="Mis Pedidos" />
         <NavItem to="/mis-direcciones" icon={ICONS.address} label="Mis Direcciones" />
         <NavItem to="/perfil" icon={ICONS.profile} label="Mi Perfil" />

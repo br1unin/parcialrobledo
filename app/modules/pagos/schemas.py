@@ -11,6 +11,39 @@ class PreferenceRequest(BaseModel):
     pedido_id: uuid.UUID
 
 
+class EfectivoRequest(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    pedido_id: uuid.UUID
+
+
+class EfectivoResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    pedido_id: uuid.UUID
+    forma_pago: str
+    mensaje: str
+
+
+class TransferenciaRequest(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    pedido_id: uuid.UUID
+
+
+class TransferenciaResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    pedido_id: uuid.UUID
+    forma_pago: str
+    mensaje: str
+    cbu: str
+    alias: str
+    titular: str
+    banco: str
+    monto: Decimal
+
+
 class PreferenceResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

@@ -30,6 +30,7 @@ async def seed():
             formas_pago = [
                 FormaPago(codigo="MERCADOPAGO", nombre="MercadoPago"),
                 FormaPago(codigo="EFECTIVO", nombre="Efectivo en local"),
+                FormaPago(codigo="TRANSFERENCIA", nombre="Transferencia bancaria"),
             ]
             for fp in formas_pago:
                 existing = await session.get(FormaPago, fp.codigo)

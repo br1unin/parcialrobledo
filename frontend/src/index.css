@@ -7,3 +7,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

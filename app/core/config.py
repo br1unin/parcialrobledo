@@ -18,6 +18,11 @@ class Settings(BaseSettings):
     MP_NOTIFICATION_URL: str = "http://localhost:8000/api/v1/pagos/webhook"
     MP_WEBHOOK_SECRET: str = ""
 
+    BANK_CBU: str = "0000000000000000000000"
+    BANK_ALIAS: str = "foodstore.pagos"
+    BANK_TITULAR: str = "Food Store S.A."
+    BANK_BANCO: str = "Banco Nación"
+
     esquema_base_de_datos: str | None = Field(default=None, exclude=True)
     usuario_base_de_datos: str | None = Field(default=None, exclude=True)
     contrasena_base_de_datos: str | None = Field(default=None, exclude=True)
