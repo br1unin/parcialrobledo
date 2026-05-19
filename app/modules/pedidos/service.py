@@ -18,6 +18,7 @@ from app.modules.pedidos.schemas import (
 
 # FSM constants
 VALID_TRANSITIONS: dict[str, list[str]] = {
+    "PENDIENTE": ["CONFIRMADO"],
     "CONFIRMADO": ["EN_CAMINO"],
     "EN_CAMINO": ["ENTREGADO"],
 }

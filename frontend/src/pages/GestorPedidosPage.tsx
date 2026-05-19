@@ -40,11 +40,12 @@ function PedidoRow({
   });
 
   const nextAction: { label: string; estado: string } | null =
+    item.estado_codigo === 'PENDIENTE'  ? { label: 'Confirmar', estado: 'CONFIRMADO' } :
     item.estado_codigo === 'CONFIRMADO' ? { label: 'En camino', estado: 'EN_CAMINO' } :
     item.estado_codigo === 'EN_CAMINO' ? { label: 'Entregado', estado: 'ENTREGADO' } :
     null;
 
-  const canCancel = item.estado_codigo === 'CONFIRMADO';
+  const canCancel = item.estado_codigo === 'PENDIENTE' || item.estado_codigo === 'CONFIRMADO';
 
   return (
     <div className="bg-white rounded-xl border border-slate-100 p-4 flex flex-col sm:flex-row sm:items-center gap-3">
